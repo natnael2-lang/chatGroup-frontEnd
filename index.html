@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compact Date Picker Example</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" rel="stylesheet">
+    <link rel="stylesheet" href="./toDoPage.css">
+    <script src="./toDoPage.js" defer></script>
+</head>
+<body>
+
+<div class="body">
+    <div class="container">
+        <input class="textInput" type="text" name="task" placeholder="add tasks"/>
+        <input type="text" id="datepicker" class="form-control date-element" placeholder="Pick a date">
+        <button class="send-btn" onclick="addList()">Add+</button>
+    </div>
+    <div class="title"><p class="task">Task</p> <p class="dueDate">dueDate</p><p class="importance"> importance</p></div>
+         
+    <div class="ul-List-element">
+    <div class="completed" style="color: white;"></div>
+          
+         
+          
+    </div>
+    <audio id="clickSound" src="./sound/success-1.mp3" preload="auto"></audio>
+    
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script>
+
+    
+    $(function() {
+        $("#datepicker").datepicker({
+            dateFormat: "yy/mm/dd" // Set the desired date format
+        });
+    });
+</script>
+
+</body>
+</html>
