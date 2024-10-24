@@ -15,9 +15,10 @@ const fetchTasks = () => {
         .then(data => {
            
             const completedTasks = data.filter(task => task.completed === true);
+            const uncompletedTasks = data.filter(task => task.completed !== true);
            completedCount=completedTasks.length;
            updateCompletedCountDisplay();
-            completedTasks.forEach(task => {
+            uncompletedTasks.forEach(task => {
                 addTaskToList(task._id, task.toDoList, task.dueDate); 
             });
         })
