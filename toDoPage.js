@@ -10,7 +10,7 @@ const input = document.getElementsByClassName("textInput");
 
 
 const fetchTasks = () => {
-    fetch('/data')
+    fetch('https://todo-delta-orpin.vercel.app/data')
         .then(response => response.json())
         .then(data => {
            
@@ -67,7 +67,7 @@ const addTaskToList = (taskId, taskText, taskDate) => {
         listContainer.removeChild(row);
         
         
-        fetch(`/data/${taskId}`, {
+        fetch(`https://todo-delta-orpin.vercel.app/data/${taskId}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ const addList = () => {
         dateElement.value = "";
 
         
-        fetch('/data', {
+        fetch('https://todo-delta-orpin.vercel.app/data', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -146,7 +146,7 @@ document.getElementById('addTaskButton').addEventListener('click', addList);
 const complated=()=>{
  
 
-fetch("/data",{
+fetch("https://todo-delta-orpin.vercel.app/data",{
     method:"patch",
     headers:"aplication/json",
     body:{"complated":true}
