@@ -1,11 +1,15 @@
 const ws = new WebSocket('wss://todo-delta-orpin.vercel.app');
 
-        ws.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-            if (message.type === 'newTask') {
-                addTaskToList(message.task._id, message.task.toDoList, message.task.dueDate);
-            }
-        };
+ws.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    if (message.type === 'newTask') {
+        addTaskToList(message.task._id, message.task.toDoList, message.task.dueDate);
+    } else if (message.type === 'completedTask') {
+        // Handle the completed task update
+        markTaskAsCompleted(message.taskId);
+    }
+};
+
 let completedCount = 0; 
 
 const updateCompletedCountDisplay = () => {
@@ -13,19 +17,16 @@ const updateCompletedCountDisplay = () => {
     countDisplay.innerText = `Completed Tasks: ${completedCount}`; 
 };
 
-
 const input = document.getElementsByClassName("textInput");
-
 
 const fetchTasks = () => {
     fetch('https://todo-delta-orpin.vercel.app/data')
         .then(response => response.json())
         .then(data => {
-           
             const completedTasks = data.filter(task => task.completed === true);
             const uncompletedTasks = data.filter(task => task.completed !== true);
-           completedCount=completedTasks.length;
-           updateCompletedCountDisplay();
+            completedCount = completedTasks.length;
+            updateCompletedCountDisplay();
             uncompletedTasks.forEach(task => {
                 addTaskToList(task._id, task.toDoList, task.dueDate); 
             });
@@ -34,7 +35,6 @@ const fetchTasks = () => {
             console.error('Error fetching tasks:', error);
         });
 };
-
 
 const addTaskToList = (taskId, taskText, taskDate) => {
     const listContainer = document.getElementsByClassName("ul-List-element")[0];
@@ -70,11 +70,8 @@ const addTaskToList = (taskId, taskText, taskDate) => {
             console.error('Task ID is missing. Cannot delete the task.');
             return; 
         }
-       
 
-        
         listContainer.removeChild(row);
-        
         
         fetch(`https://todo-delta-orpin.vercel.app/data/${taskId}`, {
             method: 'PATCH',
@@ -92,14 +89,13 @@ const addTaskToList = (taskId, taskText, taskDate) => {
         .then(data => {
             completedCount++;
             updateCompletedCountDisplay();
-            console.log('Task upated:', data.message);
+            ws.send(JSON.stringify({ type: 'completedTask', taskId })); // Notify other clients
         })
         .catch((error) => {
-            console.error('Error deleting task:', error);
+            console.error('Error marking task as completed:', error);
         });
     });
 };
-
 
 const addList = () => {
     const dateElement = document.getElementsByClassName("date-element")[0]; 
@@ -116,14 +112,11 @@ const addList = () => {
         alert("Please select a date.");
         return;
     } else {
-        
         addTaskToList(null, inputText, dateValue); 
 
-        
         input[0].value = ""; 
         dateElement.value = "";
 
-        
         fetch('https://todo-delta-orpin.vercel.app/data', {
             method: 'POST',
             headers: {
@@ -134,10 +127,10 @@ const addList = () => {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            
             const listContainer = document.getElementsByClassName("ul-List-element")[0];
             const newRow = listContainer.lastChild; 
             newRow.setAttribute("data-task-id", data._id); 
+            ws.send(JSON.stringify({ type: 'newTask', task: data })); // Notify other clients
         })
         .catch((error) => {
             console.error('Error adding task:', error);
@@ -145,21 +138,15 @@ const addList = () => {
     }
 };
 
-
 document.addEventListener('DOMContentLoaded', fetchTasks);
-
-
 document.getElementById('addTaskButton').addEventListener('click', addList);
 
-
-const complated=()=>{
- 
-
-fetch("https://todo-delta-orpin.vercel.app/data",{
-    method:"patch",
-    headers:"aplication/json",
-    body:{"complated":true}
-})
-
-
-}
+const markTaskAsCompleted = (taskId) => {
+    const listContainer = document.getElementsByClassName("ul-List-element")[0];
+    const taskRow = listContainer.querySelector(`[data-task-id="${taskId}"]`);
+    if (taskRow) {
+        listContainer.removeChild(taskRow);
+        completedCount++;
+        updateCompletedCountDisplay();
+    }
+};
