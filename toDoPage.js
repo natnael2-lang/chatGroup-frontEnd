@@ -1,3 +1,11 @@
+const ws = new WebSocket('wss://todo-delta-orpin.vercel.app/data');
+
+        ws.onmessage = (event) => {
+            const message = JSON.parse(event.data);
+            if (message.type === 'newTask') {
+                addTaskToList(message.task._id, message.task.toDoList, message.task.dueDate);
+            }
+        };
 let completedCount = 0; 
 
 const updateCompletedCountDisplay = () => {
