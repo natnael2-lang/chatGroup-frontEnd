@@ -1,4 +1,4 @@
-const ws = new WebSocket('wss://todo-delta-orpin.vercel.app/data');
+const ws = new WebSocket('wss://todo-delta-orpin.vercel.app');
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
